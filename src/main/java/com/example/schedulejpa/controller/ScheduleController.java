@@ -1,6 +1,7 @@
 package com.example.schedulejpa.controller;
 
 import com.example.schedulejpa.common.Const;
+import com.example.schedulejpa.dto.PageResponseDto;
 import com.example.schedulejpa.dto.ScheduleRequestDto;
 import com.example.schedulejpa.dto.ScheduleResponseDto;
 import com.example.schedulejpa.dto.UserResponseDto;
@@ -41,16 +42,16 @@ public class ScheduleController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<ScheduleResponseDto>> findAll(
+    public ResponseEntity<PageResponseDto<ScheduleResponseDto>> findAll(
             @RequestParam(defaultValue = "1") int pageNumber,
             @RequestParam(defaultValue = "10") int pageSize
     ) {
 
         Sort sort = Sort.by(Sort.Direction.DESC, "updatedAt");
         Pageable pageable = PageRequest.of(pageNumber-1, pageSize, sort);
-        Page<ScheduleResponseDto> scheduleResponseDtoList = scheduleService.findAll(pageable);
+        PageResponseDto<ScheduleResponseDto> response = scheduleService.findAll(pageable);
 
-        return new ResponseEntity<>(scheduleResponseDtoList, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 
