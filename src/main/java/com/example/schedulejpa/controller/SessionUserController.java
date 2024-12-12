@@ -11,10 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -22,11 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class SessionUserController {
 
-    private UserService userService;
+    private final UserService userService;
 
     @PostMapping("/login")
     public String login(
-            @Valid @ModelAttribute LoginRequestDto requestDto,
+            @Valid @RequestBody LoginRequestDto requestDto,
             HttpServletRequest request
     ) {
 
@@ -38,6 +35,20 @@ public class SessionUserController {
         UserResponseDto loginUser = userService.findById(userId);
         session.setAttribute(Const.LOGIN_USER,loginUser);
 
-        return "login";
+        return "로그인이 완료되었습니다.";
+    }
+
+    @PostMapping("/logout")
+    public String logout(
+            HttpServletRequest request
+    ) {
+
+
+        HttpSession session = request.getSession(false);
+        if(session != null) {
+            session.invalidate();
+        }
+
+        return "로그아웃이 완료되었습니다.";
     }
 }
