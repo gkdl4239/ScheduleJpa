@@ -20,13 +20,16 @@ public class ScheduleResponseDto {
 
     private LocalDateTime updatedAt;
 
-    public static ScheduleResponseDto toDto(Schedule schedule){
+    private Long commentCount;
+
+    public static ScheduleResponseDto toDto(Schedule schedule, Long commentCount){
         return new ScheduleResponseDto(
                 schedule.getUser().getUsername(),
                 schedule.getTitle(),
                 schedule.getContents(),
                 schedule.getCreatedAt(),
-                schedule.getUpdatedAt());
+                schedule.getUpdatedAt(),
+                commentCount);
     }
 
 }
