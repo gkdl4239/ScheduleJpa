@@ -1,8 +1,8 @@
 package com.example.schedulejpa.entity;
 
 import jakarta.persistence.*;
-import lombok.Generated;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Entity
@@ -13,6 +13,7 @@ public class Comment extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     private String contents;
 
     @ManyToOne
@@ -32,4 +33,5 @@ public class Comment extends BaseEntity{
     public Comment() {
 
     }
+
 }
