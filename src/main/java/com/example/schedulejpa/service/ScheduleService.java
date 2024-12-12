@@ -5,9 +5,12 @@ import com.example.schedulejpa.dto.ScheduleResponseDto;
 import com.example.schedulejpa.dto.UserResponseDto;
 import com.example.schedulejpa.entity.Schedule;
 import com.example.schedulejpa.entity.User;
+import com.example.schedulejpa.repository.CommentRepository;
 import com.example.schedulejpa.repository.ScheduleRepository;
 import com.example.schedulejpa.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +27,7 @@ public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
 
     public ScheduleResponseDto save(Long id, String title, String contents) {
 
@@ -31,29 +35,37 @@ public class ScheduleService {
         Schedule schedule = new Schedule(title,contents,user);
 
         Schedule savedSchedule = scheduleRepository.save(schedule);
+        Long countComment = commentRepository.countByScheduleId(schedule.getId());
 
         return new ScheduleResponseDto(savedSchedule.getUser().getUsername(),
                 savedSchedule.getTitle(),
                 savedSchedule.getContents(),
                 savedSchedule.getCreatedAt(),
-                savedSchedule.getUpdatedAt());
+                savedSchedule.getUpdatedAt(),
+                countComment);
     }
 
     public ScheduleResponseDto findById(Long id) {
 
         Schedule findId = scheduleRepository.findByIdOrElseThrow(id);
+        Long countComment = commentRepository.countByScheduleId(findId.getId());
 
         return new ScheduleResponseDto(findId.getUser().getUsername(),
                 findId.getTitle(),
                 findId.getContents(),
                 findId.getCreatedAt(),
-                findId.getUpdatedAt());
+                findId.getUpdatedAt(),
+                countComment);
     }
 
-    public List<ScheduleResponseDto> findAll() {
-        return scheduleRepository.findAll().stream()
-                .map(ScheduleResponseDto::toDto)
-                .toList();
+    public Page<ScheduleResponseDto> findAll(Pageable pageable) {
+
+        return scheduleRepository.findAll(pageable)
+                .map( schedule -> {
+                    Long commentCount = commentRepository.countByScheduleId(schedule.getId());
+                    return ScheduleResponseDto.toDto(schedule,commentCount);
+                });
+
     }
 
     @Transactional
