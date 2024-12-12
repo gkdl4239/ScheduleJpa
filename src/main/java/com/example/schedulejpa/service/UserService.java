@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Objects;
+
 
 @Service
 @RequiredArgsConstructor
@@ -18,18 +20,18 @@ public class UserService {
     private final UserRepository userRepository;
 
     public LoginResponseDto login(String email, String password) {
-        Long findId = userRepository.findIdByEmailAndPassword(email, password)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED,"이메일과 비밀번호가 일치하지 않습니다."));
+        User user = userRepository.findByEmailAndPassword(email, password).orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED,"이메일과 비밀번호가 일치하지 않습니다."));
 
-        return new LoginResponseDto(findId);
+        return new LoginResponseDto(user.getId());
     }
 
     public UserResponseDto findById(Long userId) {
-         User findUser = userRepository.findById(userId)
-                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다"));
+         User findUser = userRepository.findByIdOrElseThrow(userId);
 
-         return new UserResponseDto(findUser.getUsername(), findUser.getEmail());
+
+         return new UserResponseDto(findUser.getId(), findUser.getUsername(), findUser.getEmail());
     }
+
 
     public SignUpResponseDto signUp(String username, String email, String password) {
 
@@ -41,7 +43,10 @@ public class UserService {
 
     }
 
-    public void deleteById(Long id) {
+    public void delete(Long id, UserResponseDto loginUser) {
+        if(!Objects.equals(id, loginUser.getId())){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "본인의 계정이 아닙니다.");
+        }
         userRepository.deleteById(id);
     }
 }
