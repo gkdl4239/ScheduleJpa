@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ScheduleResponseDto {
 
+    private Long id;
+
     private String username;
 
     private String title;
@@ -24,6 +26,7 @@ public class ScheduleResponseDto {
 
     public static ScheduleResponseDto toDto(Schedule schedule, Long commentCount){
         return new ScheduleResponseDto(
+                schedule.getId(),
                 schedule.getUser().getUsername(),
                 schedule.getTitle(),
                 schedule.getContents(),
