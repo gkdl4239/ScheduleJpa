@@ -9,10 +9,14 @@ import com.example.schedulejpa.repository.CommentRepository;
 import com.example.schedulejpa.repository.ScheduleRepository;
 import com.example.schedulejpa.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -45,5 +49,28 @@ public class CommentService {
                 .map(CommentResponseDto::toDto)
                 .toList();
 
+    }
+
+    @Transactional
+    public void update(Long scheduleId, Long commentId, String contents, UserResponseDto loginUser) {
+
+        Comment comment = commentRepository.findByIdOrElseThrow(commentId);
+
+        if(!Objects.equals(comment.getUser().getId(), loginUser.getId())){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "본인이 작성한 댓글이 아닙니다.");
+        }
+        comment.setContents(contents);
+    }
+
+    @Transactional
+    public void delete(Long scheduleId, Long commentId, UserResponseDto loginUser) {
+
+        Comment comment = commentRepository.findByIdOrElseThrow(commentId);
+
+        if(!Objects.equals(comment.getUser().getId(), loginUser.getId())){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "본인이 작성한 댓글이 아닙니다.");
+        }
+
+        commentRepository.delete(comment);
     }
 }
