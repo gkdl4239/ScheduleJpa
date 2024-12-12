@@ -10,7 +10,7 @@ import lombok.Getter;
 public class Comment extends BaseEntity{
 
     @Id
-    @Generated
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String contents;
@@ -23,4 +23,13 @@ public class Comment extends BaseEntity{
     @JoinColumn(name = "schedule_id")
     private Schedule schedule;
 
+    public Comment(String contents, User user, Schedule schedule) {
+        this.contents = contents;
+        this.user = user;
+        this.schedule = schedule;
+    }
+
+    public Comment() {
+
+    }
 }
