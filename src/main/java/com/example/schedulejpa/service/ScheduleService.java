@@ -1,5 +1,6 @@
 package com.example.schedulejpa.service;
 
+import com.example.schedulejpa.dto.PageResponseDto;
 import com.example.schedulejpa.dto.ScheduleRequestDto;
 import com.example.schedulejpa.dto.ScheduleResponseDto;
 import com.example.schedulejpa.dto.UserResponseDto;
@@ -37,7 +38,9 @@ public class ScheduleService {
         Schedule savedSchedule = scheduleRepository.save(schedule);
         Long countComment = commentRepository.countByScheduleId(schedule.getId());
 
-        return new ScheduleResponseDto(savedSchedule.getUser().getUsername(),
+        return new ScheduleResponseDto(
+                savedSchedule.getId(),
+                savedSchedule.getUser().getUsername(),
                 savedSchedule.getTitle(),
                 savedSchedule.getContents(),
                 savedSchedule.getCreatedAt(),
@@ -50,7 +53,9 @@ public class ScheduleService {
         Schedule findId = scheduleRepository.findByIdOrElseThrow(id);
         Long countComment = commentRepository.countByScheduleId(findId.getId());
 
-        return new ScheduleResponseDto(findId.getUser().getUsername(),
+        return new ScheduleResponseDto(
+                findId.getId(),
+                findId.getUser().getUsername(),
                 findId.getTitle(),
                 findId.getContents(),
                 findId.getCreatedAt(),
@@ -58,14 +63,20 @@ public class ScheduleService {
                 countComment);
     }
 
-    public Page<ScheduleResponseDto> findAll(Pageable pageable) {
+    public PageResponseDto<ScheduleResponseDto> findAll(Pageable pageable) {
 
-        return scheduleRepository.findAll(pageable)
+        Page<ScheduleResponseDto> page = scheduleRepository.findAll(pageable)
                 .map( schedule -> {
                     Long commentCount = commentRepository.countByScheduleId(schedule.getId());
                     return ScheduleResponseDto.toDto(schedule,commentCount);
                 });
 
+        return new PageResponseDto<>(
+                page.getContent(),
+                page.getNumber() + 1,
+                page.getTotalPages()
+
+        );
     }
 
     @Transactional
