@@ -1,5 +1,6 @@
 package com.example.schedulejpa.controller;
 
+import com.example.schedulejpa.common.Const;
 import com.example.schedulejpa.dto.SignUpRequestDto;
 import com.example.schedulejpa.dto.SignUpResponseDto;
 import com.example.schedulejpa.dto.UserResponseDto;
@@ -35,8 +36,12 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
-        userService.deleteById(id);
+    public ResponseEntity<Void> deleteById(
+            @PathVariable Long id,
+            @SessionAttribute(name = Const.LOGIN_USER, required = false)
+            UserResponseDto loginUser) {
+
+        userService.delete(id,loginUser);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
