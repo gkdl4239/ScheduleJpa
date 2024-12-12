@@ -1,5 +1,6 @@
 package com.example.schedulejpa.service;
 
+import com.example.schedulejpa.config.PasswordEncoder;
 import com.example.schedulejpa.dto.LoginResponseDto;
 import com.example.schedulejpa.dto.SignUpResponseDto;
 import com.example.schedulejpa.dto.UserResponseDto;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Objects;
+import java.util.Optional;
 
 
 @Service
@@ -18,29 +20,42 @@ import java.util.Objects;
 public class UserService {
 
     private final UserRepository userRepository;
-
-    public LoginResponseDto login(String email, String password) {
-        User user = userRepository.findByEmailAndPassword(email, password).orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED,"이메일과 비밀번호가 일치하지 않습니다."));
-
-        return new LoginResponseDto(user.getId());
-    }
-
-    public UserResponseDto findById(Long userId) {
-         User findUser = userRepository.findByIdOrElseThrow(userId);
-
-
-         return new UserResponseDto(findUser.getId(), findUser.getUsername(), findUser.getEmail());
-    }
-
+    private final PasswordEncoder passwordEncoder;
 
     public SignUpResponseDto signUp(String username, String email, String password) {
 
-        User user = new User(username, email, password);
+        String encodedPassword = passwordEncoder.encode(password);
+        User user = new User(username, email, encodedPassword);
 
         User savedUser = userRepository.save(user);
 
         return new SignUpResponseDto(savedUser.getId(), savedUser.getUsername(), savedUser.getEmail());
 
+    }
+
+    public LoginResponseDto login(String email, String password) {
+
+        Optional<User> user = userRepository.findByEmail(email);
+
+        if(user.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "존재하지 않는 아이디 입니다");
+        }
+
+        User userFound = user.get();
+
+        if(!passwordEncoder.matches(password, userFound.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다");
+        }
+
+
+        return new LoginResponseDto(userFound.getId());
+    }
+
+    public UserResponseDto findById(Long userId) {
+        User findUser = userRepository.findByIdOrElseThrow(userId);
+
+
+        return new UserResponseDto(findUser.getId(), findUser.getUsername(), findUser.getEmail());
     }
 
     public void delete(Long id, UserResponseDto loginUser) {
