@@ -21,7 +21,12 @@ public class ScheduleResponseDto {
     private LocalDateTime updatedAt;
 
     public static ScheduleResponseDto toDto(Schedule schedule){
-        return new ScheduleResponseDto(schedule.getUser().getUsername(), schedule.getTitle(), schedule.getContents(), schedule.getCreatedAt(), schedule.getUpdatedAt());
+        return new ScheduleResponseDto(
+                schedule.getUser().getUsername(),
+                schedule.getTitle(),
+                schedule.getContents(),
+                schedule.getCreatedAt(),
+                schedule.getUpdatedAt());
     }
 
 }
