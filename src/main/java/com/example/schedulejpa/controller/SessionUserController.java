@@ -16,8 +16,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RequestMapping
+
 @RestController
+@RequestMapping("/users")
 @RequiredArgsConstructor
 public class SessionUserController {
 
@@ -37,5 +38,6 @@ public class SessionUserController {
         UserResponseDto loginUser = userService.findById(userId);
         session.setAttribute(Const.LOGIN_USER,loginUser);
 
+        return "login";
     }
 }
