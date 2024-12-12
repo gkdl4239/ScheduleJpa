@@ -11,6 +11,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -22,7 +25,7 @@ public class SessionUserController {
     private final UserService userService;
 
     @PostMapping("/login")
-    public String login(
+    public ResponseEntity<Void> login(
             @Valid @RequestBody LoginRequestDto requestDto,
             HttpServletRequest request
     ) {
@@ -35,11 +38,11 @@ public class SessionUserController {
         UserResponseDto loginUser = userService.findById(userId);
         session.setAttribute(Const.LOGIN_USER,loginUser);
 
-        return "로그인이 완료되었습니다.";
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/logout")
-    public String logout(
+    public ResponseEntity<Void> logout(
             HttpServletRequest request
     ) {
 
@@ -49,6 +52,6 @@ public class SessionUserController {
             session.invalidate();
         }
 
-        return "로그아웃이 완료되었습니다.";
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
