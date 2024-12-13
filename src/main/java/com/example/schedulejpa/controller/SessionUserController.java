@@ -1,10 +1,7 @@
 package com.example.schedulejpa.controller;
 
 
-import com.example.schedulejpa.common.Const;
 import com.example.schedulejpa.dto.LoginRequestDto;
-import com.example.schedulejpa.dto.LoginResponseDto;
-import com.example.schedulejpa.dto.UserResponseDto;
 import com.example.schedulejpa.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -28,13 +25,7 @@ public class SessionUserController {
             HttpServletRequest request
     ) {
 
-        LoginResponseDto responseDto = userService.login(requestDto.getEmail(), requestDto.getPassword());
-        Long userId = responseDto.getId();
-
-        HttpSession session = request.getSession();
-
-        UserResponseDto loginUser = userService.findById(userId);
-        session.setAttribute(Const.LOGIN_USER, loginUser);
+        userService.login(requestDto.getEmail(), requestDto.getPassword(),request);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -44,8 +35,8 @@ public class SessionUserController {
             HttpServletRequest request
     ) {
 
-
         HttpSession session = request.getSession(false);
+
         if (session != null) {
             session.invalidate();
         }
