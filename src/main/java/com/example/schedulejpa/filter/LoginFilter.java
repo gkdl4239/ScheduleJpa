@@ -36,7 +36,7 @@ public class LoginFilter implements Filter {
         chain.doFilter(request, response);
     }
 
-    private boolean isWhiteList (String requestURI){
+    private boolean isWhiteList(String requestURI) {
         return PatternMatchUtils.simpleMatch(WHITE_LIST, requestURI);
     }
 }

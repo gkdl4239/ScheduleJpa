@@ -28,13 +28,13 @@ public class SessionUserController {
             HttpServletRequest request
     ) {
 
-        LoginResponseDto responseDto = userService.login(requestDto.getEmail(),requestDto.getPassword());
+        LoginResponseDto responseDto = userService.login(requestDto.getEmail(), requestDto.getPassword());
         Long userId = responseDto.getId();
 
         HttpSession session = request.getSession();
 
         UserResponseDto loginUser = userService.findById(userId);
-        session.setAttribute(Const.LOGIN_USER,loginUser);
+        session.setAttribute(Const.LOGIN_USER, loginUser);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -46,7 +46,7 @@ public class SessionUserController {
 
 
         HttpSession session = request.getSession(false);
-        if(session != null) {
+        if (session != null) {
             session.invalidate();
         }
 

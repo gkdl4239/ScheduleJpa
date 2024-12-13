@@ -38,7 +38,7 @@ public class ScheduleController {
 
         ScheduleResponseDto scheduleResponseDto = scheduleService.findById(id);
 
-        return new ResponseEntity<>(scheduleResponseDto,HttpStatus.OK);
+        return new ResponseEntity<>(scheduleResponseDto, HttpStatus.OK);
     }
 
     @GetMapping
@@ -48,7 +48,7 @@ public class ScheduleController {
     ) {
 
         Sort sort = Sort.by(Sort.Direction.DESC, "updatedAt");
-        Pageable pageable = PageRequest.of(pageNumber-1, pageSize, sort);
+        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, sort);
         PageResponseDto<ScheduleResponseDto> response = scheduleService.findAll(pageable);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -62,7 +62,7 @@ public class ScheduleController {
             @SessionAttribute(name = Const.LOGIN_USER, required = false)
             UserResponseDto loginUser) {
 
-        scheduleService.update(id,requestDto.getTitle(), requestDto.getContents(), loginUser);
+        scheduleService.update(id, requestDto.getTitle(), requestDto.getContents(), loginUser);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -71,9 +71,9 @@ public class ScheduleController {
     public ResponseEntity<Void> delete(
             @PathVariable Long id,
             @SessionAttribute(name = Const.LOGIN_USER, required = false)
-            UserResponseDto loginUser ) {
+            UserResponseDto loginUser) {
 
-        scheduleService.delete(id,loginUser);
+        scheduleService.delete(id, loginUser);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

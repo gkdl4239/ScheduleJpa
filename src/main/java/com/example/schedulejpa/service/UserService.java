@@ -26,7 +26,7 @@ public class UserService {
 
         Optional<User> sameEmail = userRepository.findByEmail(email);
 
-        if(sameEmail.isPresent()){
+        if (sameEmail.isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 사용중인 이메일입니다.");
         }
 
@@ -43,13 +43,13 @@ public class UserService {
 
         Optional<User> user = userRepository.findByEmail(email);
 
-        if(user.isEmpty()) {
+        if (user.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "존재하지 않는 아이디 입니다.");
         }
 
         User userFound = user.get();
 
-        if(!passwordEncoder.matches(password, userFound.getPassword())) {
+        if (!passwordEncoder.matches(password, userFound.getPassword())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
         }
 
@@ -67,7 +67,7 @@ public class UserService {
 
     public void delete(Long id, UserResponseDto loginUser) {
 
-        if(!Objects.equals(id, loginUser.getId())){
+        if (!Objects.equals(id, loginUser.getId())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "본인의 계정이 아닙니다.");
         }
 

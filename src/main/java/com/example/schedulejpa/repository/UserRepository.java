@@ -7,11 +7,11 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<User,Long> {
+public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmail(String email);
 
-    default User findByIdOrElseThrow(Long id){
+    default User findByIdOrElseThrow(Long id) {
         return findById(id)
                 .orElseThrow(() ->
                         new ResponseStatusException(

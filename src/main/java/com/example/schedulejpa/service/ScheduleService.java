@@ -30,7 +30,7 @@ public class ScheduleService {
     public ScheduleResponseDto save(Long id, String title, String contents) {
 
         User user = userRepository.findByIdOrElseThrow(id);
-        Schedule schedule = new Schedule(title,contents,user);
+        Schedule schedule = new Schedule(title, contents, user);
 
         Schedule savedSchedule = scheduleRepository.save(schedule);
         Long countComment = commentRepository.countByScheduleId(schedule.getId());
@@ -63,9 +63,9 @@ public class ScheduleService {
     public PageResponseDto<ScheduleResponseDto> findAll(Pageable pageable) {
 
         Page<ScheduleResponseDto> page = scheduleRepository.findAll(pageable)
-                .map( schedule -> {
+                .map(schedule -> {
                     Long commentCount = commentRepository.countByScheduleId(schedule.getId());
-                    return ScheduleResponseDto.toDto(schedule,commentCount);
+                    return ScheduleResponseDto.toDto(schedule, commentCount);
                 });
 
         return new PageResponseDto<>(
@@ -81,15 +81,15 @@ public class ScheduleService {
 
         Schedule schedule = scheduleRepository.findByIdOrElseThrow(id);
 
-        if(!Objects.equals(schedule.getUser().getId(), loginUser.getId())) {
+        if (!Objects.equals(schedule.getUser().getId(), loginUser.getId())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "본인이 작성한 글이 아닙니다.");
         }
 
-        if(title == null) {
+        if (title == null) {
             title = schedule.getTitle();
         }
 
-        if(contents == null) {
+        if (contents == null) {
             contents = schedule.getContents();
         }
 
@@ -102,7 +102,7 @@ public class ScheduleService {
 
         Schedule schedule = scheduleRepository.findByIdOrElseThrow(id);
 
-        if(!Objects.equals(schedule.getUser().getId(), loginUser.getId())) {
+        if (!Objects.equals(schedule.getUser().getId(), loginUser.getId())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "본인이 작성한 글이 아닙니다.");
         }
 

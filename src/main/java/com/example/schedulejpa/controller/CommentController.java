@@ -44,7 +44,7 @@ public class CommentController {
     ) {
         List<CommentResponseDto> responseDtoList = commentService.findAll(scheduleId);
 
-        return new ResponseEntity<>(responseDtoList,HttpStatus.OK);
+        return new ResponseEntity<>(responseDtoList, HttpStatus.OK);
 
     }
 

@@ -14,7 +14,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     List<Comment> findByScheduleId(Long scheduleId, Sort sort);
 
-    default Comment findByIdOrElseThrow(Long id){
+    default Comment findByIdOrElseThrow(Long id) {
         return findById(id)
                 .orElseThrow(() ->
                         new ResponseStatusException(

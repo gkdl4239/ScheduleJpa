@@ -40,7 +40,7 @@ public class CommentService {
                 savedComment.getContents(),
                 savedComment.getCreatedAt(),
                 savedComment.getUpdatedAt()
-                );
+        );
 
     }
 
@@ -59,7 +59,7 @@ public class CommentService {
 
         Comment comment = commentRepository.findByIdOrElseThrow(commentId);
 
-        if(!Objects.equals(comment.getUser().getId(), loginUser.getId())){
+        if (!Objects.equals(comment.getUser().getId(), loginUser.getId())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "본인이 작성한 댓글이 아닙니다.");
         }
         comment.setContents(contents);
@@ -70,7 +70,7 @@ public class CommentService {
 
         Comment comment = commentRepository.findByIdOrElseThrow(commentId);
 
-        if(!Objects.equals(comment.getUser().getId(), loginUser.getId())){
+        if (!Objects.equals(comment.getUser().getId(), loginUser.getId())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "본인이 작성한 댓글이 아닙니다.");
         }
 

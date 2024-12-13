@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
 
-        @PostMapping("/signup")
-        public ResponseEntity<SignUpResponseDto> singUp(@Validated @RequestBody SignUpRequestDto requestDto){
+    @PostMapping("/signup")
+    public ResponseEntity<SignUpResponseDto> singUp(@Validated @RequestBody SignUpRequestDto requestDto) {
 
-            SignUpResponseDto ResponseDto = userService.signUp(
+        SignUpResponseDto ResponseDto = userService.signUp(
                 requestDto.getUsername(),
                 requestDto.getEmail(),
                 requestDto.getPassword());
@@ -41,7 +41,7 @@ public class UserController {
             @SessionAttribute(name = Const.LOGIN_USER, required = false)
             UserResponseDto loginUser) {
 
-        userService.delete(id,loginUser);
+        userService.delete(id, loginUser);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

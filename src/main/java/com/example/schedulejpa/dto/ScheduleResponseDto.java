@@ -25,7 +25,7 @@ public class ScheduleResponseDto {
 
     private final Long commentCount;
 
-    public static ScheduleResponseDto toDto(Schedule schedule, Long commentCount){
+    public static ScheduleResponseDto toDto(Schedule schedule, Long commentCount) {
         return new ScheduleResponseDto(
                 schedule.getId(),
                 schedule.getUser().getUsername(),

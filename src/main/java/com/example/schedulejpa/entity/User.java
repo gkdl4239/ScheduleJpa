@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Entity
-@Table(name="user")
+@Table(name = "user")
 public class User extends BaseEntity {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
