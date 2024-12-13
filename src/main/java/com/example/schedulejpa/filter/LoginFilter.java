@@ -22,18 +22,24 @@ public class LoginFilter implements Filter {
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String requestURI = httpRequest.getRequestURI();
-
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-        if (!isWhiteList(requestURI)) {
+        try {
+            if (!isWhiteList(requestURI)) {
 
-            HttpSession session = httpRequest.getSession(false);
+                HttpSession session = httpRequest.getSession(false);
 
-            if (session == null || session.getAttribute(Const.LOGIN_USER) == null) {
-                throw new RuntimeException("로그인 해주세요");
+                if (session == null || session.getAttribute(Const.LOGIN_USER) == null) {
+                    throw new RuntimeException("로그인 해주세요");
+                }
             }
+            chain.doFilter(request, response);
+        } catch (RuntimeException e) {
+            httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            httpResponse.setContentType("application/json");
+            httpResponse.setCharacterEncoding("UTF-8");
+            httpResponse.getWriter().write("{\"error\": \"" + e.getMessage() + "\"}");
         }
-        chain.doFilter(request, response);
     }
 
     private boolean isWhiteList(String requestURI) {
