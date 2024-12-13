@@ -12,7 +12,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
 
     @Bean
-    public FilterRegistrationBean loginFilter() {
+    public FilterRegistrationBean<Filter> loginFilter() {
         FilterRegistrationBean<Filter> filterRegistrationBean = new FilterRegistrationBean<>();
         filterRegistrationBean.setFilter(new LoginFilter()); // Filter 등록
         filterRegistrationBean.setOrder(1); // Filter 순서 1 설정
