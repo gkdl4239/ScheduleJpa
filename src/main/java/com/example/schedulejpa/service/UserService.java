@@ -2,7 +2,6 @@ package com.example.schedulejpa.service;
 
 import com.example.schedulejpa.common.Const;
 import com.example.schedulejpa.config.PasswordEncoder;
-import com.example.schedulejpa.dto.LoginResponseDto;
 import com.example.schedulejpa.dto.SignUpResponseDto;
 import com.example.schedulejpa.dto.UserResponseDto;
 import com.example.schedulejpa.entity.User;
@@ -34,6 +33,7 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 사용중인 이메일입니다.");
         }
 
+        // 비밀번호 암호화 하여 DB에 저장
         String encodedPassword = passwordEncoder.encode(password);
         User user = new User(username, email, encodedPassword);
 
@@ -73,6 +73,39 @@ public class UserService {
     }
 
     @Transactional
+    public void update(Long id, UserResponseDto loginUser, String username, String oldPassword, String newPassword) {
+
+        if (!Objects.equals(id, loginUser.getId())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "본인의 계정이 아닙니다.");
+        }
+
+        User findUser = userRepository.findByIdOrElseThrow(id);
+
+        xorPassword(oldPassword, newPassword);
+
+        // 기존,신규 비밀번호 입력시 기존 비밀번호 검사 후 변경
+        if (oldPassword != null) {
+            if (!passwordEncoder.matches(oldPassword, findUser.getPassword())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "기존 비밀번호가 일치하지 않습니다.");
+            } else {
+                findUser.setPassword(newPassword);
+            }
+        }
+
+        if (username != null) {
+            findUser.setUsername(username);
+        }
+
+    }
+
+    // 기존 비밀번호와 신규 비밀번호 중 하나만 입력하면 오류
+    private void xorPassword(String oldPassword, String newPassword) {
+        if(!(oldPassword == null && newPassword == null) && (oldPassword == null || newPassword == null)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "기존 비밀번호와 새 비밀번호를 둘다 입력해주세요.");
+        }
+    }
+
+    @Transactional
     public void delete(Long id, UserResponseDto loginUser) {
 
         if (!Objects.equals(id, loginUser.getId())) {
@@ -81,4 +114,6 @@ public class UserService {
 
         userRepository.deleteById(id);
     }
+
+
 }
