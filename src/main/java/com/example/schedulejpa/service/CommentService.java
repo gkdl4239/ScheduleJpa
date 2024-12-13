@@ -9,6 +9,7 @@ import com.example.schedulejpa.repository.CommentRepository;
 import com.example.schedulejpa.repository.ScheduleRepository;
 import com.example.schedulejpa.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +17,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -46,7 +46,9 @@ public class CommentService {
 
     public List<CommentResponseDto> findAll(Long scheduleId) {
 
-        return commentRepository.findByScheduleId(scheduleId).stream()
+        scheduleRepository.findByIdOrElseThrow(scheduleId);
+
+        return commentRepository.findByScheduleId(scheduleId, Sort.by(Sort.Direction.DESC, "updatedAt")).stream()
                 .map(CommentResponseDto::toDto)
                 .toList();
 

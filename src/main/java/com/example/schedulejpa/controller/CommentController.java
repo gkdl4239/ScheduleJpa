@@ -6,9 +6,11 @@ import com.example.schedulejpa.dto.CommentRequestDto;
 import com.example.schedulejpa.dto.CommentResponseDto;
 import com.example.schedulejpa.dto.UserResponseDto;
 import com.example.schedulejpa.service.CommentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,7 +24,7 @@ public class CommentController {
     @PostMapping
     public ResponseEntity<CommentResponseDto> save(
             @PathVariable Long scheduleId,
-            @RequestBody CommentRequestDto requestDto,
+            @Validated @RequestBody CommentRequestDto requestDto,
             @SessionAttribute(name = Const.LOGIN_USER, required = false)
             UserResponseDto loginUser) {
 
@@ -50,7 +52,7 @@ public class CommentController {
     public ResponseEntity<Void> update(
             @PathVariable Long scheduleId,
             @PathVariable Long commentId,
-            @RequestBody CommentRequestDto requestDto,
+            @Validated @RequestBody CommentRequestDto requestDto,
             @SessionAttribute(name = Const.LOGIN_USER, required = false)
             UserResponseDto loginUser
     ) {

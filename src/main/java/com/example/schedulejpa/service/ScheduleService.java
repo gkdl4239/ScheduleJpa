@@ -82,7 +82,7 @@ public class ScheduleService {
         Schedule schedule = scheduleRepository.findByIdOrElseThrow(id);
 
         if(!Objects.equals(schedule.getUser().getId(), loginUser.getId())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "본인이 작성한 글이 아닙니다!");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "본인이 작성한 글이 아닙니다.");
         }
 
         if(title == null) {
@@ -103,7 +103,7 @@ public class ScheduleService {
         Schedule schedule = scheduleRepository.findByIdOrElseThrow(id);
 
         if(!Objects.equals(schedule.getUser().getId(), loginUser.getId())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "본인이 작성한 글이 아닙니다!");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "본인이 작성한 글이 아닙니다.");
         }
 
         scheduleRepository.delete(schedule);
