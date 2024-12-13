@@ -1,7 +1,6 @@
 package com.example.schedulejpa.entity;
 
 
-import com.fasterxml.jackson.databind.ser.Serializers;
 import jakarta.persistence.*;
 import lombok.Getter;
 
