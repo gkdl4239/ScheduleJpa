@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Objects;
@@ -71,6 +72,7 @@ public class UserService {
         return new UserResponseDto(findUser.getId(), findUser.getUsername(), findUser.getEmail());
     }
 
+    @Transactional
     public void delete(Long id, UserResponseDto loginUser) {
 
         if (!Objects.equals(id, loginUser.getId())) {
