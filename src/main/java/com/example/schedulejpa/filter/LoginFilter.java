@@ -34,6 +34,8 @@ public class LoginFilter implements Filter {
                 }
             }
             chain.doFilter(request, response);
+
+            // 필터에서는 DispatcherServlet이 감지 못하므로 뷰 직접 설정
         } catch (RuntimeException e) {
             httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             httpResponse.setContentType("application/json");
