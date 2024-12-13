@@ -7,7 +7,7 @@ Spring을 이용해 만들었던 일정 프로젝트에서 Jdbc를 Jpa로 변경
 * 24.12.11 ~ 24.12.13
 
 # 📌 API 명세서
-## 목차
+
 - ## [유저](#user)
 - ## [일정](#schedule)
 - ## [댓글](#comment)
@@ -355,5 +355,41 @@ Spring을 이용해 만들었던 일정 프로젝트에서 Jdbc를 Jpa로 변경
 {
     "error": "본인이 작성한 댓글이 아닙니다."
 }
+```
+---
+# 📈 ERD 다이어그램
+
+```mermaid
+---
+title: Calendar
+---
+erDiagram
+    user ||--o{ comment : contains
+    user ||--o{ schedule : contains
+    user{
+        uuid id PK "user_id"
+        string username
+        string email
+        string password
+        timestamp created_at
+        timestamp updated_at
+    }
+    schedule ||--o{ comment : conatins
+    schedule{
+        uuid id PK "schedule_id"
+        uuid user_id FK "user_id"
+        string title
+        string contents
+        timestamp created_at
+        timestamp updated_at
+    }
+    comment{
+        uuid id PK
+        uuid user_id FK "user_id"
+        uuid schedule_id FK "schedule_id"
+        string contents
+        timestamp created_at
+        timestamp updated_at
+    }
 ```
 ---
