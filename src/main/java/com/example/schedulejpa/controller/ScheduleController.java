@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/schedules")
 @RequiredArgsConstructor
 public class ScheduleController {
+
     private final ScheduleService scheduleService;
 
     @PostMapping
@@ -47,6 +48,7 @@ public class ScheduleController {
             @RequestParam(defaultValue = "10") int pageSize
     ) {
 
+        // 페이징과 내림차순 정렬을 위한 선언
         Sort sort = Sort.by(Sort.Direction.DESC, "updatedAt");
         Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, sort);
         PageResponseDto<ScheduleResponseDto> response = scheduleService.findAll(pageable);
