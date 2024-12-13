@@ -1,11 +1,14 @@
 package com.example.schedulejpa.service;
 
+import com.example.schedulejpa.common.Const;
 import com.example.schedulejpa.config.PasswordEncoder;
 import com.example.schedulejpa.dto.LoginResponseDto;
 import com.example.schedulejpa.dto.SignUpResponseDto;
 import com.example.schedulejpa.dto.UserResponseDto;
 import com.example.schedulejpa.entity.User;
 import com.example.schedulejpa.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -39,22 +42,25 @@ public class UserService {
 
     }
 
-    public LoginResponseDto login(String email, String password) {
+    public void login(String email, String password, HttpServletRequest request) {
 
         Optional<User> user = userRepository.findByEmail(email);
 
         if (user.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "존재하지 않는 아이디 입니다.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "아이디나 비밀번호가 일치하지 않습니다.");
         }
 
         User userFound = user.get();
 
         if (!passwordEncoder.matches(password, userFound.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "아이디나 비밀번호가 일치하지 않습니다.");
         }
 
+        // 이메일,비밀번호를 대조해 DB에 검색되면 세션에 저장
+        HttpSession session = request.getSession();
+        UserResponseDto loginUser = findById(userFound.getId());
+        session.setAttribute(Const.LOGIN_USER, loginUser);
 
-        return new LoginResponseDto(userFound.getId());
     }
 
     public UserResponseDto findById(Long userId) {
