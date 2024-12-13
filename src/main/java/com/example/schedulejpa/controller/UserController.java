@@ -3,6 +3,7 @@ package com.example.schedulejpa.controller;
 import com.example.schedulejpa.common.Const;
 import com.example.schedulejpa.dto.SignUpRequestDto;
 import com.example.schedulejpa.dto.SignUpResponseDto;
+import com.example.schedulejpa.dto.UpdateUserRequestDto;
 import com.example.schedulejpa.dto.UserResponseDto;
 import com.example.schedulejpa.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,19 @@ public class UserController {
 
         return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
     }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Void> update(
+            @PathVariable Long id,
+            @Validated @RequestBody UpdateUserRequestDto requestDto,
+            @SessionAttribute(name = Const.LOGIN_USER, required = false)
+            UserResponseDto loginUser) {
+
+        userService.update(id, loginUser, requestDto.getUsername(), requestDto.getOldPassword(), requestDto.getNewPassword());
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteById(
