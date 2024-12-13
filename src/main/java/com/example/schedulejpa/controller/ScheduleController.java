@@ -1,12 +1,8 @@
 package com.example.schedulejpa.controller;
 
 import com.example.schedulejpa.common.Const;
-import com.example.schedulejpa.dto.PageResponseDto;
-import com.example.schedulejpa.dto.ScheduleRequestDto;
-import com.example.schedulejpa.dto.ScheduleResponseDto;
-import com.example.schedulejpa.dto.UserResponseDto;
+import com.example.schedulejpa.dto.*;
 import com.example.schedulejpa.service.ScheduleService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -32,7 +28,7 @@ public class ScheduleController {
         // 세션을 이용하여 작성자 정보 저장
         ScheduleResponseDto scheduleResponseDto = scheduleService.save(loginUser.getId(), requestDto.getTitle(), requestDto.getContents());
 
-        return new ResponseEntity<>(scheduleResponseDto, HttpStatus.OK);
+        return new ResponseEntity<>(scheduleResponseDto, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
@@ -61,7 +57,7 @@ public class ScheduleController {
     @PatchMapping("/{id}")
     public ResponseEntity<Void> updateTitleAndContents(
             @PathVariable Long id,
-            @RequestBody ScheduleRequestDto requestDto,
+            @Validated @RequestBody UpdateScheduleRequestDto requestDto,
             @SessionAttribute(name = Const.LOGIN_USER, required = false)
             UserResponseDto loginUser) {
 
