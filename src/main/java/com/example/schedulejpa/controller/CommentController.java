@@ -4,6 +4,7 @@ package com.example.schedulejpa.controller;
 import com.example.schedulejpa.common.Const;
 import com.example.schedulejpa.dto.CommentRequestDto;
 import com.example.schedulejpa.dto.CommentResponseDto;
+import com.example.schedulejpa.dto.UpdateCommentRequestDto;
 import com.example.schedulejpa.dto.UserResponseDto;
 import com.example.schedulejpa.service.CommentService;
 import jakarta.validation.Valid;
@@ -52,7 +53,7 @@ public class CommentController {
     public ResponseEntity<Void> update(
             @PathVariable Long scheduleId,
             @PathVariable Long commentId,
-            @Validated @RequestBody CommentRequestDto requestDto,
+            @Validated @RequestBody UpdateCommentRequestDto requestDto,
             @SessionAttribute(name = Const.LOGIN_USER, required = false)
             UserResponseDto loginUser
     ) {
