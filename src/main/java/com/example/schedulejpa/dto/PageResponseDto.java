@@ -1,16 +1,16 @@
 package com.example.schedulejpa.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
 @Getter
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class PageResponseDto<T> {
 
-    private List<T> contents;
-    private int currentPage;
-    private int totalPages;
+    private final List<T> contents;
+    private final int currentPage;
+    private final int totalPages;
 
 }
