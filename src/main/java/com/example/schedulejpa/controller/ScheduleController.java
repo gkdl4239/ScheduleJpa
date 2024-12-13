@@ -6,12 +6,14 @@ import com.example.schedulejpa.dto.ScheduleRequestDto;
 import com.example.schedulejpa.dto.ScheduleResponseDto;
 import com.example.schedulejpa.dto.UserResponseDto;
 import com.example.schedulejpa.service.ScheduleService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -22,7 +24,7 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
 
     @PostMapping
-    public ResponseEntity<ScheduleResponseDto> save(@RequestBody ScheduleRequestDto requestDto,
+    public ResponseEntity<ScheduleResponseDto> save(@Validated @RequestBody ScheduleRequestDto requestDto,
                                                     @SessionAttribute(name = Const.LOGIN_USER, required = false)
                                                     UserResponseDto loginUser) {
 
