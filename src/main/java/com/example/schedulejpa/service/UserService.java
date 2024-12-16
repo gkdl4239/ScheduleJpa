@@ -6,6 +6,7 @@ import com.example.schedulejpa.dto.SignUpResponseDto;
 import com.example.schedulejpa.dto.UserResponseDto;
 import com.example.schedulejpa.entity.User;
 import com.example.schedulejpa.repository.UserRepository;
+import com.example.schedulejpa.utils.Check;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Objects;
 import java.util.Optional;
 
 
@@ -24,6 +24,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final Check check;
 
     public SignUpResponseDto signUp(String username, String email, String password) {
 
@@ -51,15 +52,13 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "아이디나 비밀번호가 일치하지 않습니다.");
         }
 
-        User userFound = user.get();
+        User foundUser = user.get();
 
-        if (!passwordEncoder.matches(password, userFound.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "아이디나 비밀번호가 일치하지 않습니다.");
-        }
+        check.checkSamePw(password, foundUser.getPassword(), "아이디나 비밀번호가 일치하지 않습니다.");
 
         // 이메일,비밀번호를 대조해 DB에 검색되면 세션에 저장
         HttpSession session = request.getSession();
-        UserResponseDto loginUser = findById(userFound.getId());
+        UserResponseDto loginUser = findById(foundUser.getId());
         session.setAttribute(Const.LOGIN_USER, loginUser);
 
     }
@@ -75,25 +74,22 @@ public class UserService {
     @Transactional
     public void update(Long id, UserResponseDto loginUser, String username, String oldPassword, String newPassword) {
 
-        if (!Objects.equals(id, loginUser.getId())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "본인의 계정이 아닙니다.");
-        }
+        check.checkSameId(id, loginUser.getId(), "본인의 계정이 아닙니다.");
 
-        User findUser = userRepository.findByIdOrElseThrow(id);
+        User foundUser = userRepository.findByIdOrElseThrow(id);
 
         xorPassword(oldPassword, newPassword);
 
         // 기존,신규 비밀번호 입력시 기존 비밀번호 검사 후 변경
         if (oldPassword != null) {
-            if (!passwordEncoder.matches(oldPassword, findUser.getPassword())) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "기존 비밀번호가 일치하지 않습니다.");
-            } else {
-                findUser.setPassword(newPassword);
-            }
+
+            check.checkSamePw(oldPassword, foundUser.getPassword(), "기존 비밀번호가 일치하지 않습니다.");
+
+            foundUser.setPassword(newPassword);
         }
 
         if (username != null) {
-            findUser.setUsername(username);
+            foundUser.setUsername(username);
         }
 
     }
@@ -108,9 +104,7 @@ public class UserService {
     @Transactional
     public void delete(Long id, UserResponseDto loginUser) {
 
-        if (!Objects.equals(id, loginUser.getId())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "본인의 계정이 아닙니다.");
-        }
+        check.checkSameId(id,loginUser.getId(), "본인의 계정이 아닙니다.");
 
         userRepository.deleteById(id);
     }

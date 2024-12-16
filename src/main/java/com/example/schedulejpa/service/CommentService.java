@@ -8,15 +8,13 @@ import com.example.schedulejpa.entity.User;
 import com.example.schedulejpa.repository.CommentRepository;
 import com.example.schedulejpa.repository.ScheduleRepository;
 import com.example.schedulejpa.repository.UserRepository;
+import com.example.schedulejpa.utils.Check;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +23,7 @@ public class CommentService {
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
+    private final Check check;
 
     public CommentResponseDto save(Long scheduleId, String contents, UserResponseDto loginUser) {
 
@@ -59,9 +58,8 @@ public class CommentService {
 
         Comment comment = commentRepository.findByIdOrElseThrow(commentId);
 
-        if (!Objects.equals(comment.getUser().getId(), loginUser.getId())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "본인이 작성한 댓글이 아닙니다.");
-        }
+        check.checkSameId(comment.getUser().getId(), loginUser.getId(), "본인이 작성한 댓글이 아닙니다.");
+
         comment.setContents(contents);
     }
 
@@ -70,9 +68,7 @@ public class CommentService {
 
         Comment comment = commentRepository.findByIdOrElseThrow(commentId);
 
-        if (!Objects.equals(comment.getUser().getId(), loginUser.getId())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "본인이 작성한 댓글이 아닙니다.");
-        }
+        check.checkSameId(comment.getUser().getId(), loginUser.getId(),"본인이 작성한 댓글이 아닙니다.");
 
         commentRepository.delete(comment);
     }

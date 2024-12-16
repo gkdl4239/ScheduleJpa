@@ -8,15 +8,12 @@ import com.example.schedulejpa.entity.User;
 import com.example.schedulejpa.repository.CommentRepository;
 import com.example.schedulejpa.repository.ScheduleRepository;
 import com.example.schedulejpa.repository.UserRepository;
+import com.example.schedulejpa.utils.Check;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.util.Objects;
 
 
 @Service
@@ -26,6 +23,7 @@ public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
+    private final Check check;
 
     public ScheduleResponseDto save(Long id, String title, String contents) {
 
@@ -81,9 +79,7 @@ public class ScheduleService {
 
         Schedule schedule = scheduleRepository.findByIdOrElseThrow(id);
 
-        if (!Objects.equals(schedule.getUser().getId(), loginUser.getId())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "본인이 작성한 글이 아닙니다.");
-        }
+        check.checkSameId(schedule.getUser().getId(), loginUser.getId(), "본인이 작성한 글이 아닙니다.");
 
         if (title == null) {
             title = schedule.getTitle();
@@ -102,9 +98,7 @@ public class ScheduleService {
 
         Schedule schedule = scheduleRepository.findByIdOrElseThrow(id);
 
-        if (!Objects.equals(schedule.getUser().getId(), loginUser.getId())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "본인이 작성한 글이 아닙니다.");
-        }
+        check.checkSameId(schedule.getUser().getId(), loginUser.getId(), "본인이 작성한 글이 아닙니다.");
 
         scheduleRepository.delete(schedule);
     }
