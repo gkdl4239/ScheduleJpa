@@ -6,7 +6,7 @@ import com.example.schedulejpa.dto.SignUpResponseDto;
 import com.example.schedulejpa.dto.UserResponseDto;
 import com.example.schedulejpa.entity.User;
 import com.example.schedulejpa.repository.UserRepository;
-import com.example.schedulejpa.utils.Check;
+import com.example.schedulejpa.handler.ExceptionHandler;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final Check check;
+    private final ExceptionHandler exceptionHandler;
 
     public SignUpResponseDto signUp(String username, String email, String password) {
 
@@ -54,7 +54,7 @@ public class UserService {
 
         User foundUser = user.get();
 
-        check.checkSamePw(password, foundUser.getPassword(), "아이디나 비밀번호가 일치하지 않습니다.");
+        exceptionHandler.checkSamePw(password, foundUser.getPassword(), "아이디나 비밀번호가 일치하지 않습니다.");
 
         // 이메일,비밀번호를 대조해 DB에 검색되면 세션에 저장
         HttpSession session = request.getSession();
@@ -74,7 +74,7 @@ public class UserService {
     @Transactional
     public void update(Long id, UserResponseDto loginUser, String username, String oldPassword, String newPassword) {
 
-        check.checkSameId(id, loginUser.getId(), "본인의 계정이 아닙니다.");
+        exceptionHandler.checkSameId(id, loginUser.getId(), "본인의 계정이 아닙니다.");
 
         User foundUser = userRepository.findByIdOrElseThrow(id);
 
@@ -83,7 +83,7 @@ public class UserService {
         // 기존,신규 비밀번호 입력시 기존 비밀번호 검사 후 변경
         if (oldPassword != null) {
 
-            check.checkSamePw(oldPassword, foundUser.getPassword(), "기존 비밀번호가 일치하지 않습니다.");
+            exceptionHandler.checkSamePw(oldPassword, foundUser.getPassword(), "기존 비밀번호가 일치하지 않습니다.");
 
             foundUser.setPassword(newPassword);
         }
@@ -104,7 +104,7 @@ public class UserService {
     @Transactional
     public void delete(Long id, UserResponseDto loginUser) {
 
-        check.checkSameId(id,loginUser.getId(), "본인의 계정이 아닙니다.");
+        exceptionHandler.checkSameId(id,loginUser.getId(), "본인의 계정이 아닙니다.");
 
         userRepository.deleteById(id);
     }

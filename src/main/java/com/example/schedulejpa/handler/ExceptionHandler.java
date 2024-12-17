@@ -1,4 +1,4 @@
-package com.example.schedulejpa.utils;
+package com.example.schedulejpa.handler;
 
 import com.example.schedulejpa.config.PasswordEncoder;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +10,7 @@ import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
-public class Check {
+public class ExceptionHandler {
 
     private final PasswordEncoder passwordEncoder;
 

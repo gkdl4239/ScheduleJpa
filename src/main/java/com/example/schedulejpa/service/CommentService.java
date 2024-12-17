@@ -8,7 +8,7 @@ import com.example.schedulejpa.entity.User;
 import com.example.schedulejpa.repository.CommentRepository;
 import com.example.schedulejpa.repository.ScheduleRepository;
 import com.example.schedulejpa.repository.UserRepository;
-import com.example.schedulejpa.utils.Check;
+import com.example.schedulejpa.handler.ExceptionHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,7 @@ public class CommentService {
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
-    private final Check check;
+    private final ExceptionHandler exceptionHandler;
 
     public CommentResponseDto save(Long scheduleId, String contents, UserResponseDto loginUser) {
 
@@ -54,21 +54,21 @@ public class CommentService {
     }
 
     @Transactional
-    public void update(Long scheduleId, Long commentId, String contents, UserResponseDto loginUser) {
+    public void update(Long commentId, String contents, UserResponseDto loginUser) {
 
         Comment comment = commentRepository.findByIdOrElseThrow(commentId);
 
-        check.checkSameId(comment.getUser().getId(), loginUser.getId(), "본인이 작성한 댓글이 아닙니다.");
+        exceptionHandler.checkSameId(comment.getUser().getId(), loginUser.getId(), "본인이 작성한 댓글이 아닙니다.");
 
         comment.setContents(contents);
     }
 
     @Transactional
-    public void delete(Long scheduleId, Long commentId, UserResponseDto loginUser) {
+    public void delete(Long commentId, UserResponseDto loginUser) {
 
         Comment comment = commentRepository.findByIdOrElseThrow(commentId);
 
-        check.checkSameId(comment.getUser().getId(), loginUser.getId(),"본인이 작성한 댓글이 아닙니다.");
+        exceptionHandler.checkSameId(comment.getUser().getId(), loginUser.getId(),"본인이 작성한 댓글이 아닙니다.");
 
         commentRepository.delete(comment);
     }

@@ -58,7 +58,7 @@ public class CommentController {
             UserResponseDto loginUser
     ) {
 
-        commentService.update(scheduleId, commentId, requestDto.getContents(), loginUser);
+        commentService.update(commentId, requestDto.getContents(), loginUser);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -71,7 +71,7 @@ public class CommentController {
             UserResponseDto loginUser
     ) {
 
-        commentService.delete(scheduleId, commentId, loginUser);
+        commentService.delete(commentId, loginUser);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

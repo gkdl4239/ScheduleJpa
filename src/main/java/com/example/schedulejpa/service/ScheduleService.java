@@ -8,7 +8,7 @@ import com.example.schedulejpa.entity.User;
 import com.example.schedulejpa.repository.CommentRepository;
 import com.example.schedulejpa.repository.ScheduleRepository;
 import com.example.schedulejpa.repository.UserRepository;
-import com.example.schedulejpa.utils.Check;
+import com.example.schedulejpa.handler.ExceptionHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +23,7 @@ public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
-    private final Check check;
+    private final ExceptionHandler exceptionHandler;
 
     public ScheduleResponseDto save(Long id, String title, String contents) {
 
@@ -79,7 +79,7 @@ public class ScheduleService {
 
         Schedule schedule = scheduleRepository.findByIdOrElseThrow(id);
 
-        check.checkSameId(schedule.getUser().getId(), loginUser.getId(), "본인이 작성한 글이 아닙니다.");
+        exceptionHandler.checkSameId(schedule.getUser().getId(), loginUser.getId(), "본인이 작성한 글이 아닙니다.");
 
         if (title == null) {
             title = schedule.getTitle();
@@ -98,7 +98,7 @@ public class ScheduleService {
 
         Schedule schedule = scheduleRepository.findByIdOrElseThrow(id);
 
-        check.checkSameId(schedule.getUser().getId(), loginUser.getId(), "본인이 작성한 글이 아닙니다.");
+        exceptionHandler.checkSameId(schedule.getUser().getId(), loginUser.getId(), "본인이 작성한 글이 아닙니다.");
 
         scheduleRepository.delete(schedule);
     }
