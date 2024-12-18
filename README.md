@@ -49,7 +49,7 @@ erDiagram
 - ## [일정](#schedule)
 - ## [댓글](#comment)
 
-## 유저<a id="user"></a>
+# 유저<a id="user"></a>
 
 | Method   | URL             | Description | Request |
 |----------|-----------------|-------------|---------|
@@ -189,7 +189,7 @@ erDiagram
 }
 ```
 ---
-## 일정 <a id="schedule"></a>
+# 일정 <a id="schedule"></a>
 
 | Method   | URL             | Description | Request |
 |----------|-----------------|-------------|---------|
@@ -298,7 +298,7 @@ erDiagram
 }
 ```
 ---
-## 댓글<a id="comment"></a>
+# 댓글<a id="comment"></a>
 
 | Method   | URL                                 | Description | Request |
 |----------|-------------------------------------|-------------|---------|
