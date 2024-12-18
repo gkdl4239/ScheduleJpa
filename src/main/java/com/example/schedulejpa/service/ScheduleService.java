@@ -20,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ScheduleService {
 
+    private final UserService userService;
+    private final CommentService commentService;
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
@@ -60,11 +62,7 @@ public class ScheduleService {
 
     public PageResponseDto<ScheduleResponseDto> findAll(Pageable pageable) {
 
-        Page<ScheduleResponseDto> page = scheduleRepository.findAll(pageable)
-                .map(schedule -> {
-                    Long commentCount = commentRepository.countByScheduleId(schedule.getId());
-                    return ScheduleResponseDto.toDto(schedule, commentCount);
-                });
+        Page<ScheduleResponseDto> page = scheduleRepository.findAllScheduleAndCommentCount(pageable);
 
         return new PageResponseDto<>(
                 page.getContent(),
