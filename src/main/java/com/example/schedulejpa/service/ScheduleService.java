@@ -8,6 +8,8 @@ import com.example.schedulejpa.entity.User;
 import com.example.schedulejpa.repository.ScheduleRepository;
 import com.example.schedulejpa.handler.ExceptionHandler;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -20,8 +22,10 @@ public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
     private final UserService userService;
-    private final CommentService commentService;
     private final ExceptionHandler exceptionHandler;
+    @Autowired
+    @Lazy
+    private CommentService commentService;
 
     public ScheduleResponseDto save(Long id, String title, String contents) {
 

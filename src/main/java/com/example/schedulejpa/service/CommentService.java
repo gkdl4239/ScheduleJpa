@@ -6,10 +6,10 @@ import com.example.schedulejpa.entity.Comment;
 import com.example.schedulejpa.entity.Schedule;
 import com.example.schedulejpa.entity.User;
 import com.example.schedulejpa.repository.CommentRepository;
-import com.example.schedulejpa.repository.ScheduleRepository;
-import com.example.schedulejpa.repository.UserRepository;
 import com.example.schedulejpa.handler.ExceptionHandler;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,8 +22,10 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final ExceptionHandler exceptionHandler;
-    private final ScheduleService scheduleService;
     private final UserService userService;
+    @Autowired
+    @Lazy
+    private ScheduleService scheduleService;
 
     public CommentResponseDto save(Long scheduleId, String contents, UserResponseDto loginUser) {
 
