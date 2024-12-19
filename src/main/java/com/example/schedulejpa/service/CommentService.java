@@ -20,15 +20,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CommentService {
 
-    private final ScheduleRepository scheduleRepository;
-    private final UserRepository userRepository;
     private final CommentRepository commentRepository;
     private final ExceptionHandler exceptionHandler;
+    private final ScheduleService scheduleService;
+    private final UserService userService;
 
     public CommentResponseDto save(Long scheduleId, String contents, UserResponseDto loginUser) {
 
-        User user = userRepository.findByIdOrElseThrow(loginUser.getId());
-        Schedule schedule = scheduleRepository.findByIdOrElseThrow(scheduleId);
+        User user = userService.findByIdOrElseThrow(loginUser.getId());
+        Schedule schedule = scheduleService.findByIdOrElseThrow(scheduleId);
         Comment comment = new Comment(contents, user, schedule);
 
         Comment savedComment = commentRepository.save(comment);
@@ -45,7 +45,7 @@ public class CommentService {
 
     public List<CommentResponseDto> findAll(Long scheduleId) {
 
-        scheduleRepository.findByIdOrElseThrow(scheduleId);
+        scheduleService.findByIdOrElseThrow(scheduleId);
 
         return commentRepository.findByScheduleId(scheduleId, Sort.by(Sort.Direction.DESC, "updatedAt")).stream()
                 .map(CommentResponseDto::toDto)
@@ -71,5 +71,9 @@ public class CommentService {
         exceptionHandler.checkSameId(comment.getUser().getId(), loginUser.getId(),"본인이 작성한 댓글이 아닙니다.");
 
         commentRepository.delete(comment);
+    }
+
+    public Long countByScheduleId(Long id) {
+        return commentRepository.countByScheduleId(id);
     }
 }

@@ -5,9 +5,7 @@ import com.example.schedulejpa.dto.ScheduleResponseDto;
 import com.example.schedulejpa.dto.UserResponseDto;
 import com.example.schedulejpa.entity.Schedule;
 import com.example.schedulejpa.entity.User;
-import com.example.schedulejpa.repository.CommentRepository;
 import com.example.schedulejpa.repository.ScheduleRepository;
-import com.example.schedulejpa.repository.UserRepository;
 import com.example.schedulejpa.handler.ExceptionHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,20 +18,18 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ScheduleService {
 
+    private final ScheduleRepository scheduleRepository;
     private final UserService userService;
     private final CommentService commentService;
-    private final ScheduleRepository scheduleRepository;
-    private final UserRepository userRepository;
-    private final CommentRepository commentRepository;
     private final ExceptionHandler exceptionHandler;
 
     public ScheduleResponseDto save(Long id, String title, String contents) {
 
-        User user = userRepository.findByIdOrElseThrow(id);
+        User user = userService.findByIdOrElseThrow(id);
         Schedule schedule = new Schedule(title, contents, user);
 
         Schedule savedSchedule = scheduleRepository.save(schedule);
-        Long countComment = commentRepository.countByScheduleId(schedule.getId());
+        Long countComment = commentService.countByScheduleId(schedule.getId());
 
         return new ScheduleResponseDto(
                 savedSchedule.getId(),
@@ -48,7 +44,7 @@ public class ScheduleService {
     public ScheduleResponseDto findById(Long id) {
 
         Schedule findId = scheduleRepository.findByIdOrElseThrow(id);
-        Long countComment = commentRepository.countByScheduleId(findId.getId());
+        Long countComment = commentService.countByScheduleId(findId.getId());
 
         return new ScheduleResponseDto(
                 findId.getId(),
@@ -99,5 +95,9 @@ public class ScheduleService {
         exceptionHandler.checkSameId(schedule.getUser().getId(), loginUser.getId(), "본인이 작성한 글이 아닙니다.");
 
         scheduleRepository.delete(schedule);
+    }
+
+    public Schedule findByIdOrElseThrow(Long id) {
+        return scheduleRepository.findByIdOrElseThrow(id);
     }
 }
