@@ -25,7 +25,7 @@ public class SessionUserController {
             HttpServletRequest request
     ) {
 
-        userService.login(requestDto.getEmail(), requestDto.getPassword(),request);
+        userService.login(requestDto.getEmail(), requestDto.getPassword(), request);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

@@ -23,7 +23,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
                         ));
     }
 
-    @Query( value= "SELECT new com.example.schedulejpa.dto.ScheduleResponseDto" +
+    @Query(value = "SELECT new com.example.schedulejpa.dto.ScheduleResponseDto" +
             "(s.id,s.user.username,s.title,s.contents,s.createdAt,s.updatedAt, COUNT(c)) " +
             "FROM Schedule s " +
             "LEFT JOIN Comment c ON c.schedule.id = s.id " +

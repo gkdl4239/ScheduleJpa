@@ -96,7 +96,7 @@ public class UserService {
 
     // 기존 비밀번호와 신규 비밀번호 중 하나만 입력하면 오류
     private void xorPassword(String oldPassword, String newPassword) {
-        if(!(oldPassword == null && newPassword == null) && (oldPassword == null || newPassword == null)) {
+        if (!(oldPassword == null && newPassword == null) && (oldPassword == null || newPassword == null)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "기존 비밀번호와 새 비밀번호를 둘다 입력해주세요.");
         }
     }
@@ -104,7 +104,7 @@ public class UserService {
     @Transactional
     public void delete(Long id, UserResponseDto loginUser) {
 
-        exceptionHandler.checkSameId(id,loginUser.getId(), "본인의 계정이 아닙니다.");
+        exceptionHandler.checkSameId(id, loginUser.getId(), "본인의 계정이 아닙니다.");
 
         userRepository.deleteById(id);
     }

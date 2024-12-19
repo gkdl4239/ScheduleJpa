@@ -68,7 +68,7 @@ public class CommentService {
 
         Comment comment = commentRepository.findByIdOrElseThrow(commentId);
 
-        exceptionHandler.checkSameId(comment.getUser().getId(), loginUser.getId(),"본인이 작성한 댓글이 아닙니다.");
+        exceptionHandler.checkSameId(comment.getUser().getId(), loginUser.getId(), "본인이 작성한 댓글이 아닙니다.");
 
         commentRepository.delete(comment);
     }
