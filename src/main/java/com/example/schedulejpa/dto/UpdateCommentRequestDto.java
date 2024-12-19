@@ -10,6 +10,4 @@ public class UpdateCommentRequestDto {
 
     @Pattern(regexp = "^\\S.*$", message = "공백일 수 없습니다.")
     private final String contents;
-
-
 }
