@@ -26,7 +26,7 @@ public class ScheduleController {
                                                     UserResponseDto loginUser) {
 
         // 세션을 이용하여 작성자 정보 저장
-        ScheduleResponseDto scheduleResponseDto = scheduleService.save(loginUser.getId(), requestDto.getTitle(), requestDto.getContents());
+        ScheduleResponseDto scheduleResponseDto = scheduleService.save(loginUser.id(), requestDto.title(), requestDto.contents());
 
         return new ResponseEntity<>(scheduleResponseDto, HttpStatus.CREATED);
     }
@@ -61,7 +61,7 @@ public class ScheduleController {
             @SessionAttribute(name = Const.LOGIN_USER, required = false)
             UserResponseDto loginUser) {
 
-        scheduleService.update(id, requestDto.getTitle(), requestDto.getContents(), loginUser);
+        scheduleService.update(id, requestDto.title(), requestDto.contents(), loginUser);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
