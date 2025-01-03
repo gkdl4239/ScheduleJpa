@@ -5,19 +5,19 @@ import com.example.schedulejpa.config.PasswordEncoder;
 import com.example.schedulejpa.dto.SignUpResponseDto;
 import com.example.schedulejpa.dto.UserResponseDto;
 import com.example.schedulejpa.entity.User;
+import com.example.schedulejpa.exception.CustomBadRequestException;
+import com.example.schedulejpa.exception.CustomNotFoundException;
 import com.example.schedulejpa.repository.UserRepository;
 import com.example.schedulejpa.handler.ExceptionHandler;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
-
+@Transactional(readOnly = true)
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -26,12 +26,13 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final ExceptionHandler exceptionHandler;
 
+    @Transactional
     public SignUpResponseDto signUp(String username, String email, String password) {
 
         Optional<User> sameEmail = userRepository.findByEmail(email);
 
         if (sameEmail.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 사용중인 이메일입니다.");
+            throw new CustomBadRequestException("이미 사용중인 이메일입니다.");
         }
 
         // 비밀번호 암호화 하여 DB에 저장
@@ -40,16 +41,17 @@ public class UserService {
 
         User savedUser = userRepository.save(user);
 
-        return new SignUpResponseDto(savedUser.getId(), savedUser.getUsername(), savedUser.getEmail());
+        return SignUpResponseDto.toDto(savedUser);
 
     }
 
+    @Transactional
     public void login(String email, String password, HttpServletRequest request) {
 
         Optional<User> user = userRepository.findByEmail(email);
 
         if (user.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "아이디나 비밀번호가 일치하지 않습니다.");
+            throw new CustomBadRequestException("아이디나 비밀번호가 일치하지 않습니다.");
         }
 
         User foundUser = user.get();
@@ -63,20 +65,20 @@ public class UserService {
 
     }
 
+
     public UserResponseDto findById(Long userId) {
 
-        User findUser = userRepository.findByIdOrElseThrow(userId);
+        User foundUser = findByIdOrElseThrow(userId);
 
-
-        return new UserResponseDto(findUser.getId(), findUser.getUsername(), findUser.getEmail());
+        return UserResponseDto.toDto(foundUser);
     }
 
     @Transactional
     public void update(Long id, UserResponseDto loginUser, String username, String oldPassword, String newPassword) {
 
-        exceptionHandler.checkSameId(id, loginUser.getId(), "본인의 계정이 아닙니다.");
+        exceptionHandler.checkSameId(id, loginUser.id(), "본인의 계정이 아닙니다.");
 
-        User foundUser = userRepository.findByIdOrElseThrow(id);
+        User foundUser = findByIdOrElseThrow(id);
 
         xorPassword(oldPassword, newPassword);
 
@@ -97,19 +99,20 @@ public class UserService {
     // 기존 비밀번호와 신규 비밀번호 중 하나만 입력하면 오류
     private void xorPassword(String oldPassword, String newPassword) {
         if (!(oldPassword == null && newPassword == null) && (oldPassword == null || newPassword == null)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "기존 비밀번호와 새 비밀번호를 둘다 입력해주세요.");
+            throw new CustomBadRequestException("기존 비밀번호와 새 비밀번호를 둘다 입력해주세요.");
         }
     }
 
     @Transactional
     public void delete(Long id, UserResponseDto loginUser) {
 
-        exceptionHandler.checkSameId(id, loginUser.getId(), "본인의 계정이 아닙니다.");
+        exceptionHandler.checkSameId(id, loginUser.id(), "본인의 계정이 아닙니다.");
 
         userRepository.deleteById(id);
     }
 
     public User findByIdOrElseThrow(Long id) {
-        return userRepository.findByIdOrElseThrow(id);
+        return userRepository.findById(id)
+                .orElseThrow(() -> new CustomNotFoundException("유저를 찾을 수 없습니다."));
     }
 }
