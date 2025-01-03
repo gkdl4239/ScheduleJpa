@@ -5,6 +5,7 @@ import com.example.schedulejpa.dto.ScheduleResponseDto;
 import com.example.schedulejpa.dto.UserResponseDto;
 import com.example.schedulejpa.entity.Schedule;
 import com.example.schedulejpa.entity.User;
+import com.example.schedulejpa.exception.CustomNotFoundException;
 import com.example.schedulejpa.repository.ScheduleRepository;
 import com.example.schedulejpa.handler.ExceptionHandler;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
+@Transactional(readOnly = true)
 @Service
 @RequiredArgsConstructor
 public class ScheduleService {
@@ -27,6 +28,7 @@ public class ScheduleService {
     @Lazy
     private CommentService commentService;
 
+    @Transactional
     public ScheduleResponseDto save(Long id, String title, String contents) {
 
         User user = userService.findByIdOrElseThrow(id);
@@ -35,29 +37,15 @@ public class ScheduleService {
         Schedule savedSchedule = scheduleRepository.save(schedule);
         Long countComment = commentService.countByScheduleId(schedule.getId());
 
-        return new ScheduleResponseDto(
-                savedSchedule.getId(),
-                savedSchedule.getUser().getUsername(),
-                savedSchedule.getTitle(),
-                savedSchedule.getContents(),
-                savedSchedule.getCreatedAt(),
-                savedSchedule.getUpdatedAt(),
-                countComment);
+        return ScheduleResponseDto.toDto(savedSchedule, countComment);
     }
 
     public ScheduleResponseDto findById(Long id) {
 
-        Schedule findId = scheduleRepository.findByIdOrElseThrow(id);
-        Long countComment = commentService.countByScheduleId(findId.getId());
+        Schedule foundSchedule = findByIdOrElseThrow(id);
+        Long countComment = commentService.countByScheduleId(foundSchedule.getId());
 
-        return new ScheduleResponseDto(
-                findId.getId(),
-                findId.getUser().getUsername(),
-                findId.getTitle(),
-                findId.getContents(),
-                findId.getCreatedAt(),
-                findId.getUpdatedAt(),
-                countComment);
+        return ScheduleResponseDto.toDto(foundSchedule,countComment);
     }
 
     public PageResponseDto<ScheduleResponseDto> findAll(Pageable pageable) {
@@ -75,9 +63,9 @@ public class ScheduleService {
     @Transactional
     public void update(Long id, String title, String contents, UserResponseDto loginUser) {
 
-        Schedule schedule = scheduleRepository.findByIdOrElseThrow(id);
+        Schedule schedule = findByIdOrElseThrow(id);
 
-        exceptionHandler.checkSameId(schedule.getUser().getId(), loginUser.getId(), "본인이 작성한 글이 아닙니다.");
+        exceptionHandler.checkSameId(schedule.getUser().getId(), loginUser.id(), "본인이 작성한 글이 아닙니다.");
 
         if (title == null) {
             title = schedule.getTitle();
@@ -94,14 +82,15 @@ public class ScheduleService {
     @Transactional
     public void delete(Long id, UserResponseDto loginUser) {
 
-        Schedule schedule = scheduleRepository.findByIdOrElseThrow(id);
+        Schedule schedule = findByIdOrElseThrow(id);
 
-        exceptionHandler.checkSameId(schedule.getUser().getId(), loginUser.getId(), "본인이 작성한 글이 아닙니다.");
+        exceptionHandler.checkSameId(schedule.getUser().getId(), loginUser.id(), "본인이 작성한 글이 아닙니다.");
 
         scheduleRepository.delete(schedule);
     }
 
     public Schedule findByIdOrElseThrow(Long id) {
-        return scheduleRepository.findByIdOrElseThrow(id);
+        return scheduleRepository.findById(id)
+                .orElseThrow(() -> new CustomNotFoundException("존재하지 않는 일정입니다."));
     }
 }
