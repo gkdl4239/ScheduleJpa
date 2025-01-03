@@ -7,7 +7,6 @@ import com.example.schedulejpa.dto.CommentResponseDto;
 import com.example.schedulejpa.dto.UpdateCommentRequestDto;
 import com.example.schedulejpa.dto.UserResponseDto;
 import com.example.schedulejpa.service.CommentService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,12 +16,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/schedules/{scheduleId}/comments")
+@RequestMapping("/schedules")
 @RequiredArgsConstructor
 public class CommentController {
     private final CommentService commentService;
 
-    @PostMapping
+    @PostMapping("/{scheduleId}/comments")
     public ResponseEntity<CommentResponseDto> save(
             @PathVariable Long scheduleId,
             @Validated @RequestBody CommentRequestDto requestDto,
@@ -32,13 +31,13 @@ public class CommentController {
 
         CommentResponseDto responseDto = commentService.save(
                 scheduleId,
-                requestDto.getContents(),
+                requestDto.contents(),
                 loginUser);
 
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 
-    @GetMapping
+    @GetMapping("/{scheduleId}/comments")
     public ResponseEntity<List<CommentResponseDto>> findAll(
             @PathVariable Long scheduleId
 
@@ -49,23 +48,21 @@ public class CommentController {
 
     }
 
-    @PatchMapping("/{commentId}")
+    @PatchMapping("/comments/{commentId}")
     public ResponseEntity<Void> update(
-            @PathVariable Long scheduleId,
             @PathVariable Long commentId,
             @Validated @RequestBody UpdateCommentRequestDto requestDto,
             @SessionAttribute(name = Const.LOGIN_USER, required = false)
             UserResponseDto loginUser
     ) {
 
-        commentService.update(commentId, requestDto.getContents(), loginUser);
+        commentService.update(commentId, requestDto.contents(), loginUser);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("/{commentId}")
+    @DeleteMapping("/comments/{commentId}")
     public ResponseEntity<Void> delete(
-            @PathVariable Long scheduleId,
             @PathVariable Long commentId,
             @SessionAttribute(name = Const.LOGIN_USER, required = false)
             UserResponseDto loginUser
