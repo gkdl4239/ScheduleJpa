@@ -1,31 +1,22 @@
 package com.example.schedulejpa.dto;
 
 import com.example.schedulejpa.entity.Schedule;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Getter
-@RequiredArgsConstructor
-public class ScheduleResponseDto {
+public record ScheduleResponseDto(
+        Long id,
+        String username,
+        String title,
+        String contents,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt,
+        Long commentCount) {
 
-    private final Long id;
-
-    private final String username;
-
-    private final String title;
-
-    private final String contents;
-
-    private final LocalDateTime createdAt;
-
-    private final LocalDateTime updatedAt;
-
-    private final Long commentCount;
-
-    public static ScheduleResponseDto toDto(Schedule schedule, Long commentCount) {
+    public static ScheduleResponseDto toDto(Schedule schedule, Long countComment) {
         return new ScheduleResponseDto(
                 schedule.getId(),
                 schedule.getUser().getUsername(),
@@ -33,7 +24,7 @@ public class ScheduleResponseDto {
                 schedule.getContents(),
                 schedule.getCreatedAt(),
                 schedule.getUpdatedAt(),
-                commentCount);
+                countComment);
     }
 
 }

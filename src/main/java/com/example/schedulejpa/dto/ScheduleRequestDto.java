@@ -2,15 +2,10 @@ package com.example.schedulejpa.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
-public class ScheduleRequestDto {
+public record ScheduleRequestDto(
+        @NotBlank String title,
+        @NotBlank String contents) {
 
-    @NotBlank
-    private final String title;
-
-    @NotBlank
-    private final String contents;
 }
