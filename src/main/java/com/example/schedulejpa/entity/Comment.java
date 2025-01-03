@@ -2,12 +2,14 @@ package com.example.schedulejpa.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
 @Entity
+@NoArgsConstructor
 @Table(name = "comment")
 public class Comment extends BaseEntity {
 
@@ -33,8 +35,4 @@ public class Comment extends BaseEntity {
         this.user = user;
         this.schedule = schedule;
     }
-
-    public Comment() {
-    }
-
 }

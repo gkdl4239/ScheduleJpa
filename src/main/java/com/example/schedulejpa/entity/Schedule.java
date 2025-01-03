@@ -2,6 +2,7 @@ package com.example.schedulejpa.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -9,6 +10,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Getter
 @Entity
 @Table(name = "schedule")
+@NoArgsConstructor
 public class Schedule extends BaseEntity {
 
     @Id
@@ -30,10 +32,6 @@ public class Schedule extends BaseEntity {
         this.title = title;
         this.contents = contents;
         this.user = user;
-    }
-
-    public Schedule() {
-
     }
 
     public void setTitleAndContents(String title, String contents) {

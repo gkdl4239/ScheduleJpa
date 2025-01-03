@@ -3,6 +3,7 @@ package com.example.schedulejpa.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @Entity
 @Table(name = "user")
+@NoArgsConstructor
 public class User extends BaseEntity {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,9 +33,5 @@ public class User extends BaseEntity {
         this.username = username;
         this.email = email;
         this.password = password;
-    }
-
-    public User() {
-
     }
 }
