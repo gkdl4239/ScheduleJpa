@@ -22,9 +22,9 @@ public class UserController {
     public ResponseEntity<SignUpResponseDto> singUp(@Validated @RequestBody SignUpRequestDto requestDto) {
 
         SignUpResponseDto ResponseDto = userService.signUp(
-                requestDto.getUsername(),
-                requestDto.getEmail(),
-                requestDto.getPassword());
+                requestDto.username(),
+                requestDto.email(),
+                requestDto.password());
 
         return new ResponseEntity<>(ResponseDto, HttpStatus.CREATED);
     }
@@ -43,7 +43,7 @@ public class UserController {
             @SessionAttribute(name = Const.LOGIN_USER, required = false)
             UserResponseDto loginUser) {
 
-        userService.update(id, loginUser, requestDto.getUsername(), requestDto.getOldPassword(), requestDto.getNewPassword());
+        userService.update(id, loginUser, requestDto.username(), requestDto.oldPassword(), requestDto.newPassword());
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
