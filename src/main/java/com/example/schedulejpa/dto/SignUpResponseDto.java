@@ -1,16 +1,19 @@
 package com.example.schedulejpa.dto;
 
 
+import com.example.schedulejpa.entity.User;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
-public class SignUpResponseDto {
-
-    private final Long id;
-
-    private final String username;
-
-    private final String email;
+public record SignUpResponseDto(
+        Long id,
+        String username,
+        String email) {
+    public static SignUpResponseDto toDto(User user) {
+        return new SignUpResponseDto(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail()
+        );
+    }
 }
