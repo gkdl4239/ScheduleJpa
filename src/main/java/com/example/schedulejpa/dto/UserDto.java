@@ -4,12 +4,12 @@ import com.example.schedulejpa.entity.User;
 import lombok.Getter;
 
 @Getter
-public record UserResponseDto(
+public record UserDto(
         Long id,
         String username,
         String email) {
-    public static UserResponseDto toDto(User user) {
-        return new UserResponseDto(
+    public static UserDto toDto(User user) {
+        return new UserDto(
                 user.getId(),
                 user.getUsername(),
                 user.getEmail()
