@@ -23,7 +23,7 @@ public class ScheduleController {
     @PostMapping
     public ResponseEntity<ScheduleResponseDto> save(@Validated @RequestBody ScheduleRequestDto requestDto,
                                                     @SessionAttribute(name = Const.LOGIN_USER, required = false)
-                                                    UserResponseDto loginUser) {
+                                                    UserDto loginUser) {
 
         // 세션을 이용하여 작성자 정보 저장
         ScheduleResponseDto scheduleResponseDto = scheduleService.save(loginUser.id(), requestDto.title(), requestDto.contents());
@@ -59,7 +59,7 @@ public class ScheduleController {
             @PathVariable Long id,
             @Validated @RequestBody UpdateScheduleRequestDto requestDto,
             @SessionAttribute(name = Const.LOGIN_USER, required = false)
-            UserResponseDto loginUser) {
+            UserDto loginUser) {
 
         scheduleService.update(id, requestDto.title(), requestDto.contents(), loginUser);
 
@@ -70,7 +70,7 @@ public class ScheduleController {
     public ResponseEntity<Void> delete(
             @PathVariable Long id,
             @SessionAttribute(name = Const.LOGIN_USER, required = false)
-            UserResponseDto loginUser) {
+            UserDto loginUser) {
 
         scheduleService.delete(id, loginUser);
 
