@@ -5,7 +5,7 @@ import com.example.schedulejpa.common.Const;
 import com.example.schedulejpa.dto.CommentRequestDto;
 import com.example.schedulejpa.dto.CommentResponseDto;
 import com.example.schedulejpa.dto.UpdateCommentRequestDto;
-import com.example.schedulejpa.dto.UserResponseDto;
+import com.example.schedulejpa.dto.UserDto;
 import com.example.schedulejpa.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,7 +26,7 @@ public class CommentController {
             @PathVariable Long scheduleId,
             @Validated @RequestBody CommentRequestDto requestDto,
             @SessionAttribute(name = Const.LOGIN_USER, required = false)
-            UserResponseDto loginUser) {
+            UserDto loginUser) {
 
 
         CommentResponseDto responseDto = commentService.save(
@@ -53,7 +53,7 @@ public class CommentController {
             @PathVariable Long commentId,
             @Validated @RequestBody UpdateCommentRequestDto requestDto,
             @SessionAttribute(name = Const.LOGIN_USER, required = false)
-            UserResponseDto loginUser
+            UserDto loginUser
     ) {
 
         commentService.update(commentId, requestDto.contents(), loginUser);
@@ -65,7 +65,7 @@ public class CommentController {
     public ResponseEntity<Void> delete(
             @PathVariable Long commentId,
             @SessionAttribute(name = Const.LOGIN_USER, required = false)
-            UserResponseDto loginUser
+            UserDto loginUser
     ) {
 
         commentService.delete(commentId, loginUser);
