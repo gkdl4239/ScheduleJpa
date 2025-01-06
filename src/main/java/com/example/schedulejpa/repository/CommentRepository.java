@@ -10,6 +10,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     long countByScheduleId(Long scheduleId);
 
-    List<Comment> findByScheduleId(Long scheduleId, Sort sort);
+    List<Comment> findByScheduleIdOrderByUpdatedAtDesc(Long scheduleId);
 
 }
