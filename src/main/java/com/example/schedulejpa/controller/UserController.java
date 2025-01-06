@@ -4,7 +4,7 @@ import com.example.schedulejpa.common.Const;
 import com.example.schedulejpa.dto.SignUpRequestDto;
 import com.example.schedulejpa.dto.SignUpResponseDto;
 import com.example.schedulejpa.dto.UpdateUserRequestDto;
-import com.example.schedulejpa.dto.UserResponseDto;
+import com.example.schedulejpa.dto.UserDto;
 import com.example.schedulejpa.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -30,10 +30,10 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponseDto> findById(@PathVariable Long id) {
-        UserResponseDto userResponseDto = userService.findById(id);
+    public ResponseEntity<UserDto> findById(@PathVariable Long id) {
+        UserDto userDto = userService.findById(id);
 
-        return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
+        return new ResponseEntity<>(userDto, HttpStatus.OK);
     }
 
     @PatchMapping("/{id}")
@@ -41,7 +41,7 @@ public class UserController {
             @PathVariable Long id,
             @Validated @RequestBody UpdateUserRequestDto requestDto,
             @SessionAttribute(name = Const.LOGIN_USER, required = false)
-            UserResponseDto loginUser) {
+            UserDto loginUser) {
 
         userService.update(id, loginUser, requestDto.username(), requestDto.oldPassword(), requestDto.newPassword());
 
@@ -53,7 +53,7 @@ public class UserController {
     public ResponseEntity<Void> deleteById(
             @PathVariable Long id,
             @SessionAttribute(name = Const.LOGIN_USER, required = false)
-            UserResponseDto loginUser) {
+            UserDto loginUser) {
 
         userService.delete(id, loginUser);
 
