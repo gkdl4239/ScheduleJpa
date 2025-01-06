@@ -2,12 +2,11 @@ package com.example.schedulejpa.service;
 
 import com.example.schedulejpa.dto.PageResponseDto;
 import com.example.schedulejpa.dto.ScheduleResponseDto;
-import com.example.schedulejpa.dto.UserResponseDto;
+import com.example.schedulejpa.dto.UserDto;
 import com.example.schedulejpa.entity.Schedule;
 import com.example.schedulejpa.entity.User;
 import com.example.schedulejpa.exception.CustomNotFoundException;
 import com.example.schedulejpa.repository.ScheduleRepository;
-import com.example.schedulejpa.handler.ExceptionHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -23,7 +22,6 @@ public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
     private final UserService userService;
-    private final ExceptionHandler exceptionHandler;
     @Autowired
     @Lazy
     private CommentService commentService;
@@ -61,30 +59,22 @@ public class ScheduleService {
     }
 
     @Transactional
-    public void update(Long id, String title, String contents, UserResponseDto loginUser) {
+    public void update(Long id, String title, String contents, UserDto loginUser) {
 
         Schedule schedule = findByIdOrElseThrow(id);
 
-        exceptionHandler.checkSameId(schedule.getUser().getId(), loginUser.id(), "본인이 작성한 글이 아닙니다.");
+        User.isMine(schedule.getUser().getId(), loginUser.id(), "본인이 작성한 글이 아닙니다.");
 
-        if (title == null) {
-            title = schedule.getTitle();
-        }
-
-        if (contents == null) {
-            contents = schedule.getContents();
-        }
-
-        schedule.setTitleAndContents(title, contents);
+        schedule.updateTitleAndContents(title, contents);
 
     }
 
     @Transactional
-    public void delete(Long id, UserResponseDto loginUser) {
+    public void delete(Long id, UserDto loginUser) {
 
         Schedule schedule = findByIdOrElseThrow(id);
 
-        exceptionHandler.checkSameId(schedule.getUser().getId(), loginUser.id(), "본인이 작성한 글이 아닙니다.");
+        User.isMine(schedule.getUser().getId(), loginUser.id(), "본인이 작성한 글이 아닙니다.");
 
         scheduleRepository.delete(schedule);
     }

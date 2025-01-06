@@ -22,7 +22,6 @@ public class Schedule extends BaseEntity {
     @Column(columnDefinition = "longtext")
     private String contents;
 
-    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -34,7 +33,16 @@ public class Schedule extends BaseEntity {
         this.user = user;
     }
 
-    public void setTitleAndContents(String title, String contents) {
+    public void updateTitleAndContents(String title, String contents) {
+
+        if (title == null) {
+            title = this.getTitle();
+        }
+
+        if (contents == null) {
+            contents = this.getContents();
+        }
+
         this.title = title;
         this.contents = contents;
     }

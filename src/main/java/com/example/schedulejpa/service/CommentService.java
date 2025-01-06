@@ -1,17 +1,15 @@
 package com.example.schedulejpa.service;
 
 import com.example.schedulejpa.dto.CommentResponseDto;
-import com.example.schedulejpa.dto.UserResponseDto;
+import com.example.schedulejpa.dto.UserDto;
 import com.example.schedulejpa.entity.Comment;
 import com.example.schedulejpa.entity.Schedule;
 import com.example.schedulejpa.entity.User;
 import com.example.schedulejpa.exception.CustomNotFoundException;
 import com.example.schedulejpa.repository.CommentRepository;
-import com.example.schedulejpa.handler.ExceptionHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,14 +21,13 @@ import java.util.List;
 public class CommentService {
 
     private final CommentRepository commentRepository;
-    private final ExceptionHandler exceptionHandler;
     private final UserService userService;
     @Autowired
     @Lazy
     private ScheduleService scheduleService;
 
     @Transactional
-    public CommentResponseDto save(Long scheduleId, String contents, UserResponseDto loginUser) {
+    public CommentResponseDto save(Long scheduleId, String contents, UserDto loginUser) {
 
         User user = userService.findByIdOrElseThrow(loginUser.id());
         Schedule schedule = scheduleService.findByIdOrElseThrow(scheduleId);
@@ -46,32 +43,28 @@ public class CommentService {
 
         scheduleService.findByIdOrElseThrow(scheduleId);
 
-        return commentRepository.findByScheduleId(scheduleId, Sort.by(Sort.Direction.DESC, "updatedAt")).stream()
+        return commentRepository.findByScheduleIdOrderByUpdatedAtDesc(scheduleId).stream()
                 .map(CommentResponseDto::toDto)
                 .toList();
 
     }
 
     @Transactional
-    public void update(Long commentId, String contents, UserResponseDto loginUser) {
+    public void update(Long commentId, String contents, UserDto loginUser) {
 
         Comment comment = findByIdOrElseThrow(commentId);
 
-        exceptionHandler.checkSameId(comment.getUser().getId(), loginUser.id(), "본인이 작성한 댓글이 아닙니다.");
+        User.isMine(comment.getUser().getId(), loginUser.id(), "본인이 작성한 댓글이 아닙니다.");
 
-        if(contents == null) {
-            contents = comment.getContents();
-        }
-
-        comment.setContents(contents);
+        comment.updateContents(contents);
     }
 
     @Transactional
-    public void delete(Long commentId, UserResponseDto loginUser) {
+    public void delete(Long commentId, UserDto loginUser) {
 
         Comment comment = findByIdOrElseThrow(commentId);
 
-        exceptionHandler.checkSameId(comment.getUser().getId(), loginUser.id(), "본인이 작성한 댓글이 아닙니다.");
+        User.isMine(comment.getUser().getId(), loginUser.id(), "본인이 작성한 댓글이 아닙니다.");
 
         commentRepository.delete(comment);
     }

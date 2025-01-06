@@ -3,19 +3,17 @@ package com.example.schedulejpa.service;
 import com.example.schedulejpa.common.Const;
 import com.example.schedulejpa.config.PasswordEncoder;
 import com.example.schedulejpa.dto.SignUpResponseDto;
-import com.example.schedulejpa.dto.UserResponseDto;
+import com.example.schedulejpa.dto.UserDto;
 import com.example.schedulejpa.entity.User;
 import com.example.schedulejpa.exception.CustomBadRequestException;
 import com.example.schedulejpa.exception.CustomNotFoundException;
 import com.example.schedulejpa.repository.UserRepository;
-import com.example.schedulejpa.handler.ExceptionHandler;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
 
 @Transactional(readOnly = true)
 @Service
@@ -24,14 +22,11 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final ExceptionHandler exceptionHandler;
 
     @Transactional
     public SignUpResponseDto signUp(String username, String email, String password) {
 
-        Optional<User> sameEmail = userRepository.findByEmail(email);
-
-        if (sameEmail.isPresent()) {
+        if(userRepository.findByEmail(email).isPresent()) {
             throw new CustomBadRequestException("이미 사용중인 이메일입니다.");
         }
 
@@ -48,35 +43,30 @@ public class UserService {
     @Transactional
     public void login(String email, String password, HttpServletRequest request) {
 
-        Optional<User> user = userRepository.findByEmail(email);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomBadRequestException("아이디나 비밀번호가 일치하지 않습니다."));
 
-        if (user.isEmpty()) {
-            throw new CustomBadRequestException("아이디나 비밀번호가 일치하지 않습니다.");
-        }
-
-        User foundUser = user.get();
-
-        exceptionHandler.checkSamePw(password, foundUser.getPassword(), "아이디나 비밀번호가 일치하지 않습니다.");
+        checkSamePw(password, user.getPassword(), "아이디나 비밀번호가 일치하지 않습니다.");
 
         // 이메일,비밀번호를 대조해 DB에 검색되면 세션에 저장
         HttpSession session = request.getSession();
-        UserResponseDto loginUser = findById(foundUser.getId());
+        UserDto loginUser = findById(user.getId());
         session.setAttribute(Const.LOGIN_USER, loginUser);
 
     }
 
 
-    public UserResponseDto findById(Long userId) {
+    public UserDto findById(Long userId) {
 
         User foundUser = findByIdOrElseThrow(userId);
 
-        return UserResponseDto.toDto(foundUser);
+        return UserDto.toDto(foundUser);
     }
 
     @Transactional
-    public void update(Long id, UserResponseDto loginUser, String username, String oldPassword, String newPassword) {
+    public void update(Long id, UserDto loginUser, String username, String oldPassword, String newPassword) {
 
-        exceptionHandler.checkSameId(id, loginUser.id(), "본인의 계정이 아닙니다.");
+        User.isMine(id, loginUser.id(), "본인의 계정이 아닙니다.");
 
         User foundUser = findByIdOrElseThrow(id);
 
@@ -85,12 +75,13 @@ public class UserService {
         // 기존,신규 비밀번호 입력시 기존 비밀번호 검사 후 변경
         if (oldPassword != null) {
 
-            exceptionHandler.checkSamePw(oldPassword, foundUser.getPassword(), "기존 비밀번호가 일치하지 않습니다.");
+            checkSamePw(oldPassword, foundUser.getPassword(), "기존 비밀번호가 일치하지 않습니다.");
 
             foundUser.setPassword(newPassword);
         }
 
         if (username != null) {
+
             foundUser.setUsername(username);
         }
 
@@ -104,9 +95,9 @@ public class UserService {
     }
 
     @Transactional
-    public void delete(Long id, UserResponseDto loginUser) {
+    public void delete(Long id, UserDto loginUser) {
 
-        exceptionHandler.checkSameId(id, loginUser.id(), "본인의 계정이 아닙니다.");
+        User.isMine(id, loginUser.id(), "본인의 계정이 아닙니다.");
 
         userRepository.deleteById(id);
     }
@@ -114,5 +105,11 @@ public class UserService {
     public User findByIdOrElseThrow(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new CustomNotFoundException("유저를 찾을 수 없습니다."));
+    }
+
+    private void checkSamePw(String enteredPw, String foundPw, String warning) {
+        if (!passwordEncoder.matches(enteredPw, foundPw)) {
+            throw new CustomBadRequestException(warning);
+        }
     }
 }
